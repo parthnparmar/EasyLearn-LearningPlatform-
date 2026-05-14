@@ -1,0 +1,46 @@
+@model List<EasyLearn.Models.PYQ>
+@{
+    ViewData["Title"] = "Previous Year Questions (PYQ)";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-file-alt"></i> Previous Year Questions (PYQ)</h2>
+            <p class="text-muted">Practice with previous exam papers from your enrolled courses</p>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No PYQ papers available yet. PYQ papers are automatically added after exam dates expire.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var pyq in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@pyq.Title</h5>
+                            <p class="card-text">
+                                <strong>Course:</strong> @pyq.Course.Title<br>
+                                <strong>Category:</strong> @pyq.Course.Category?.Name<br>
+                                <strong>Exam Date:</strong> @pyq.ExamDate.ToString("dd MMM yyyy")<br>
+                                <strong>Questions:</strong> @pyq.Questions.Count
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a asp-action="ViewPYQ" asp-route-pyqId="@pyq.Id" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-eye"></i> View Paper
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,102 @@
+@model EasyLearn.Models.PYQ
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <a asp-action="PYQ" class="btn btn-secondary mb-3">
+                    <i class="fas fa-arrow-left"></i> Back to PYQ List
+                </a>
+                <a asp-action="DownloadPYQ" asp-route-pyqId="@Model.Id" class="btn btn-primary mb-3">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+            </div>
+            <h2>@Model.Title</h2>
+            <p class="text-muted">
+                <strong>Course:</strong> @Model.Course.Title | 
+                <strong>Exam Date:</strong> @Model.ExamDate.ToString("dd MMMM yyyy")
+            </p>
+        </div>
+    </div>
+
+    @{
+        var partAQuestions = Model.Questions.Where(q => q.Part == EasyLearn.Models.ExamPart.PartA).OrderBy(q => q.OrderIndex).ToList();
+        var partBQuestions = Model.Questions.Where(q => q.Part == EasyLearn.Models.ExamPart.PartB).OrderBy(q => q.OrderIndex).ToList();
+    }
+
+    @if (partAQuestions.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Part A - Multiple Choice Questions (50 Marks)</h4>
+                <small>25 Questions × 2 Marks each</small>
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < partAQuestions.Count; i++)
+                {
+                    var question = partAQuestions[i];
+                    <div class="mb-4 p-3 border rounded">
+                        <h6><strong>Q@(i + 1).</strong> @question.Text <span class="badge bg-info">@question.Points Marks</span></h6>
+                        @if (!string.IsNullOrEmpty(question.ImageUrl))
+                        {
+                            <div class="mb-3">
+                                <img src="@question.ImageUrl" alt="Question Image" class="img-fluid rounded" style="max-width: 500px;" />
+                            </div>
+                        }
+                        @if (question.Options.Any())
+                        {
+                            <div class="ms-4 mt-2">
+                                @foreach (var option in question.Options.OrderBy(o => o.OrderIndex))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label @(option.IsCorrect ? "text-success fw-bold" : "")">
+                                            @option.Text
+                                            @if (option.IsCorrect)
+                                            {
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (partBQuestions.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Part B - Theory Questions (30 Marks)</h4>
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < partBQuestions.Count; i++)
+                {
+                    var question = partBQuestions[i];
+                    <div class="mb-4 p-3 border rounded">
+                        <h6><strong>Q@(i + 1).</strong> @question.Text <span class="badge bg-success">@question.Points Marks</span></h6>
+                        @if (!string.IsNullOrEmpty(question.ImageUrl))
+                        {
+                            <div class="mb-3">
+                                <img src="@question.ImageUrl" alt="Question Image" class="img-fluid rounded" style="max-width: 500px;" />
+                            </div>
+                        }
+                        <div class="ms-4 mt-2">
+                            <textarea class="form-control" rows="4" placeholder="Write your answer here..." disabled></textarea>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> <strong>Note:</strong> This is a previous year question paper for practice. Correct answers for MCQs are highlighted in green.
+    </div>
+</div>

@@ -1,0 +1,167 @@
+@model EasyLearn.Models.QuizAttempt
+@{
+    ViewData["Title"] = "Quiz Result";
+    var correctAnswers = Model.StudentAnswers.Count(sa => sa.IsCorrect);
+    var wrongAnswers = Model.StudentAnswers.Count(sa => !sa.IsCorrect && sa.SelectedAnswerId != null);
+    var unattempted = Model.Quiz.Questions.Count - Model.StudentAnswers.Count;
+    var totalQuestions = Model.Quiz.Questions.Count;
+    var maxPossibleScore = totalQuestions * 2;
+    var actualScore = correctAnswers * 2; // +2 for correct, 0 for wrong/unattempted
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header @(Model.IsPassed ? "bg-success" : "bg-danger") text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas @(Model.IsPassed ? "fa-check-circle" : "fa-times-circle")"></i>
+                        Quiz @(Model.IsPassed ? "Passed" : "Failed")
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h1 class="display-4 @(Model.IsPassed ? "text-success" : "text-danger")">
+                            @Math.Round(Model.Percentage, 1)%
+                        </h1>
+                        <p class="lead">Your Score: @actualScore / @maxPossibleScore points</p>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div class="row text-center mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                    <h5 class="card-title">@correctAnswers</h5>
+                                    <p class="card-text">Correct (+2 each)</p>
+                                    <small>@(correctAnswers * 2) points</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body">
+                                    <i class="fas fa-times-circle fa-2x mb-2"></i>
+                                    <h5 class="card-title">@wrongAnswers</h5>
+                                    <p class="card-text">Wrong (0 points)</p>
+                                    <small>@(wrongAnswers * 0) points</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-secondary text-white">
+                                <div class="card-body">
+                                    <i class="fas fa-circle fa-2x mb-2"></i>
+                                    <h5 class="card-title">@unattempted</h5>
+                                    <p class="card-text">Unattempted (0 points)</p>
+                                    <small>@(unattempted * 0) points</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <i class="fas fa-calculator fa-2x mb-2"></i>
+                                    <h5 class="card-title">@totalQuestions</h5>
+                                    <p class="card-text">Total Questions</p>
+                                    <small>Max: @maxPossibleScore points</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Details -->
+                    <div class="row text-center mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@Model.Quiz.Title</h5>
+                                    <p class="card-text text-muted">Quiz Name</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@Model.Quiz.PassingScore%</h5>
+                                    <p class="card-text text-muted">Passing Score Required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@Model.Quiz.TimeLimit min</h5>
+                                    <p class="card-text text-muted">Time Limit</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scoring System Explanation -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-info-circle me-2"></i>Scoring System:</h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <strong class="text-success">+2 Points</strong><br>
+                                <small>Correct Answer</small>
+                            </div>
+                            <div class="col-4">
+                                <strong class="text-danger">0 Points</strong><br>
+                                <small>Wrong Answer</small>
+                            </div>
+                            <div class="col-4">
+                                <strong class="text-muted">0 Points</strong><br>
+                                <small>Unattempted</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert @(Model.IsPassed ? "alert-success" : "alert-danger")">
+                        <h5 class="alert-heading">
+                            <i class="fas @(Model.IsPassed ? "fa-trophy" : "fa-exclamation-triangle")"></i>
+                            @(Model.IsPassed ? "Congratulations!" : "Better Luck Next Time!")
+                        </h5>
+                        <p class="mb-0">
+                            @if (Model.IsPassed)
+                            {
+                                <text>You have successfully passed the quiz with @Math.Round(Model.Percentage, 1)% (@actualScore/@maxPossibleScore points). Great job!</text>
+                            }
+                            else
+                            {
+                                <text>You scored @Math.Round(Model.Percentage, 1)% (@actualScore/@maxPossibleScore points), which is below the passing score of @Model.Quiz.PassingScore%. Don't worry, you can retake the quiz to improve your score.</text>
+                            }
+                        </p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <strong>Started At:</strong> @Model.AttemptedAt.ToString("MMM dd, yyyy hh:mm tt")
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Completed At:</strong> @Model.CompletedAt?.ToString("MMM dd, yyyy hh:mm tt")
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="@Url.Action("CourseDetails", new { id = Model.Quiz.CourseId })" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Course
+                        </a>
+                        
+                        @if (!Model.IsPassed)
+                        {
+                            <a href="@Url.Action("TakeQuiz", new { quizId = Model.QuizId })" class="btn btn-warning ms-2">
+                                <i class="fas fa-redo"></i> Retake Quiz
+                            </a>
+                        }
+                        
+                        <a href="@Url.Action("MyCourses")" class="btn btn-secondary ms-2">
+                            <i class="fas fa-book"></i> My Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
