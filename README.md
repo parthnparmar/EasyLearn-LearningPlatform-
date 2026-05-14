@@ -2,9 +2,6 @@
 
 > A full-featured Learning Management System built with **ASP.NET Core 9.0**
 
-**🌐 Live:** https://easylearnworld.runasp.net
-
----
 
 ## 📌 What is EasyLearn?
 
@@ -151,15 +148,6 @@ FAIL → Request Re-Exam (₹200)
 
 ---
 
-## 🔑 Default Login Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admineasylearn@gmail.com | parth123 |
-| Instructor | instructor@easylearn.com | Instructor123! |
-| Student | student@easylearn.com | Student123! |
-
----
 
 ## 🚀 Local Setup
 
