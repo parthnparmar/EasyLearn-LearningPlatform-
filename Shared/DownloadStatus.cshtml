@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "Preparing Download";
+    var downloadUrl = ViewBag.DownloadUrl as string;
+    var fileName = ViewBag.FileName as string ?? "file";
+    var returnUrl = ViewBag.ReturnUrl as string ?? "/";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .download-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-icon {
+            display: none;
+            font-size: 60px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .action-buttons {
+            display: none;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="download-container">
+            <div class="spinner" id="spinner"></div>
+            <div class="success-icon" id="successIcon">✓</div>
+            <h3 id="statusText">Preparing your download...</h3>
+            <p id="subText">Please wait while we generate your @fileName</p>
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn btn-primary" onclick="startDownload()">Download Now</button>
+                <button class="btn btn-secondary" onclick="goBack()">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let downloadStarted = false;
+        const returnUrl = '@Html.Raw(returnUrl)';
+        
+        setTimeout(function() {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('successIcon').style.display = 'block';
+            document.getElementById('statusText').textContent = 'Your file is ready!';
+            document.getElementById('subText').textContent = 'Click the button below to download your @fileName';
+            document.getElementById('actionButtons').style.display = 'block';
+        }, 1500);
+        
+        function startDownload() {
+            if (!downloadStarted) {
+                downloadStarted = true;
+                document.getElementById('statusText').textContent = 'Downloading...';
+                document.getElementById('subText').innerHTML = 'Your download has started. <a href="javascript:goBack()" style="color:#007bff;text-decoration:underline;cursor:pointer;">Click here to go back</a>';
+                window.location.href = '@Html.Raw(downloadUrl)';
+            }
+        }
+        
+        function goBack() {
+            if (returnUrl && returnUrl !== '') {
+                window.location.href = returnUrl;
+            } else {
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>

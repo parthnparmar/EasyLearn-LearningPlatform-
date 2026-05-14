@@ -1,0 +1,45 @@
+@model List<EasyLearn.Models.DoubtChat>
+@{
+    ViewData["Title"] = "My Doubts";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Doubts</h2>
+        <a href="/doubts/create" class="btn btn-primary">Ask New Doubt</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No doubts yet. Ask your first doubt!</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var doubt in Model)
+            {
+                <a href="/doubts/@doubt.Id" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@doubt.Subject</h5>
+                        <small>
+                            <span class="badge bg-info me-1">@doubt.Category</span>
+                            <span class="badge bg-@(doubt.Status == "Open" ? "warning" : "success")">@doubt.Status</span>
+                        </small>
+                    </div>
+                    <p class="mb-1">Course: @doubt.Course.Title</p>
+                    <small>
+                        @doubt.Messages.Count message(s) • 
+                        @if (doubt.Instructor != null)
+                        {
+                            <text>Instructor: @doubt.Instructor.FirstName @doubt.Instructor.LastName</text>
+                        }
+                        else
+                        {
+                            <text>Waiting for instructor</text>
+                        }
+                    </small>
+                </a>
+            }
+        </div>
+    }
+</div>

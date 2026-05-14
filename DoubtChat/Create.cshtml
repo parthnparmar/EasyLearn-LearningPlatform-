@@ -1,0 +1,62 @@
+@using Microsoft.AspNetCore.Identity
+@using EasyLearn.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext DbContext
+@{
+    ViewData["Title"] = "Ask a Doubt";
+    var user = await UserManager.GetUserAsync(User);
+    var enrolledCourses = DbContext.Enrollments
+        .Where(e => e.StudentId == user!.Id)
+        .Select(e => e.Course)
+        .ToList();
+    var preSelectedCourseId = ViewBag.CourseId as int?;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Ask a Doubt</h2>
+
+    <form method="post" action="/doubts/create">
+        <div class="mb-3">
+            <label class="form-label">Course</label>
+            <select name="courseId" class="form-select" required>
+                <option value="">Select a course</option>
+                @foreach (var course in enrolledCourses)
+                {
+                    @if (preSelectedCourseId == course.Id)
+                    {
+                        <option value="@course.Id" selected>@course.Title</option>
+                    }
+                    else
+                    {
+                        <option value="@course.Id">@course.Title</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Message Type</label>
+            <select name="category" class="form-select" required>
+                <option value="Doubt">📚 Doubt / Question</option>
+                <option value="Exam">📝 Exam Related</option>
+                <option value="Result">📊 Result Query</option>
+                <option value="ExamDate">📅 Exam Date Inquiry</option>
+                <option value="Assignment">📋 Assignment</option>
+                <option value="General">💬 General</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" placeholder="Brief description of your doubt" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Your Doubt</label>
+            <textarea name="message" class="form-control" rows="5" placeholder="Describe your doubt in detail..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Doubt</button>
+        <a href="/doubts" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,46 @@
+@model List<EasyLearn.Models.DoubtChat>
+@{
+    ViewData["Title"] = "Student Doubts";
+}
+
+<link rel="stylesheet" href="~/css/doubt-chat.css" />
+
+<div class="container mt-4 doubt-chat-container">
+    <h2 class="mb-4">Student Doubts</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No student doubts at the moment.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var doubt in Model)
+            {
+                <a href="/doubts/@doubt.Id" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@doubt.Subject</h5>
+                        <small>
+                            <span class="badge bg-info me-1">@doubt.Category</span>
+                            <span class="badge bg-@(doubt.Status == "Open" ? "warning" : "success")">@doubt.Status</span>
+                        </small>
+                    </div>
+                    <p class="mb-1">
+                        Student: @doubt.Student.FirstName @doubt.Student.LastName • 
+                        Course: @doubt.Course.Title
+                    </p>
+                    <small>
+                        @doubt.Messages.Count message(s) • 
+                        @{
+                            var unreadCount = doubt.Messages.Count(m => !m.IsRead && m.SenderId == doubt.StudentId);
+                        }
+                        @if (unreadCount > 0)
+                        {
+                            <span class="badge bg-danger">@unreadCount new</span>
+                        }
+                    </small>
+                </a>
+            }
+        </div>
+    }
+</div>
